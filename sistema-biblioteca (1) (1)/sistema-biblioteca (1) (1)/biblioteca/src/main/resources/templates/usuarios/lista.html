@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Usuários — Biblioteca</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <a th:href="@{/}" class="nav-brand"><svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg><span class="brand-text">BiblioSystem</span></a>
+    <ul class="nav-links">
+        <li><a th:href="@{/livros}">Livros</a></li>
+        <li><a th:href="@{/usuarios}" class="active">Usuários</a></li>
+        <li><a th:href="@{/emprestimos}">Empréstimos</a></li>
+        <li><a th:href="@{/reservas}">Reservas</a></li>
+        <li><a th:href="@{/multas}">Multas</a></li>
+    </ul>
+</nav>
+<main class="main-content">
+    <div th:if="${mensagem}" class="alert alert-success" th:text="${mensagem}"></div>
+    <div th:if="${erro}" class="alert alert-error" th:text="${erro}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Usuários</h1>
+            <p class="page-subtitle">Alunos, professores e funcionários</p>
+        </div>
+        <a th:href="@{/usuarios/novo}" class="btn btn-primary">+ Novo Usuário</a>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table" th:if="${not #lists.isEmpty(usuarios)}">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Matrícula</th>
+                    <th>Tipo</th>
+                    <th>Endereço</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="u : ${usuarios}">
+                    <td th:text="${u.nome}">-</td>
+                    <td th:text="${u.matricula}">-</td>
+                    <td>
+                        <span th:text="${u.tipo}"
+                              th:classappend="${u.tipo == 'ALUNO'} ? 'badge badge-blue' : (${u.tipo == 'PROFESSOR'} ? 'badge badge-green' : 'badge badge-amber')">-</span>
+                    </td>
+                    <td th:text="${u.endereco}">-</td>
+                    <td class="actions-cell">
+                        <a th:href="@{/usuarios/editar/{id}(id=${u.id})}" class="btn btn-sm btn-secondary">Editar</a>
+                        <form th:action="@{/usuarios/remover/{id}(id=${u.id})}" method="post" style="display:inline"
+                              onsubmit="return confirm('Confirmar remoção?')">
+                            <button type="submit" class="btn btn-sm btn-danger">Remover</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${#lists.isEmpty(usuarios)}" class="empty-state">
+            <p>Nenhum usuário cadastrado.</p>
+            <a th:href="@{/usuarios/novo}" class="btn btn-primary">Cadastrar Usuário</a>
+        </div>
+    </div>
+</main>
+<footer class="footer"><p>Sistema de Controle de Biblioteca &copy; 2024</p></footer>
+</body>
+</html>
