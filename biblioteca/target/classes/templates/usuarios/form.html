@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Usuário — Biblioteca</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <a th:href="@{/}" class="nav-brand"><svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg><span class="brand-text">Biblioteca</span></a>
+    <ul class="nav-links">
+        <li><a th:href="@{/livros}">Livros</a></li>
+        <li><a th:href="@{/usuarios}" class="active">Usuários</a></li>
+        <li><a th:href="@{/emprestimos}">Empréstimos</a></li>
+        <li><a th:href="@{/reservas}">Reservas</a></li>
+        <li><a th:href="@{/multas}">Multas</a></li>
+    </ul>
+</nav>
+<main class="main-content">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title" th:text="${usuario.id != null} ? 'Editar Usuário' : 'Novo Usuário'">Usuário</h1>
+            <p class="page-subtitle">Preencha os dados do usuário</p>
+        </div>
+        <a th:href="@{/usuarios}" class="btn btn-ghost">← Voltar</a>
+    </div>
+
+    <div class="form-card">
+        <form th:action="@{/usuarios/salvar}" method="post" th:object="${usuario}">
+            <input type="hidden" th:field="*{id}"/>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="nome">Nome *</label>
+                    <input type="text" id="nome" th:field="*{nome}" class="form-control" required placeholder="Nome completo"/>
+                </div>
+                <div class="form-group">
+                    <label for="matricula">Matrícula *</label>
+                    <input type="text" id="matricula" th:field="*{matricula}" class="form-control" required placeholder="Número de matrícula"/>
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tipo *</label>
+                    <select id="tipo" th:field="*{tipo}" class="form-control" required>
+                        <option value="">Selecione...</option>
+                        <option value="ALUNO">Aluno</option>
+                        <option value="PROFESSOR">Professor</option>
+                        <option value="FUNCIONARIO">Funcionário</option>
+                    </select>
+                </div>
+                <div class="form-group form-group-full">
+                    <label for="endereco">Endereço</label>
+                    <input type="text" id="endereco" th:field="*{endereco}" class="form-control" placeholder="Endereço completo"/>
+                </div>
+            </div>
+            <div class="form-actions">
+                <a th:href="@{/usuarios}" class="btn btn-ghost">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Salvar Usuário</button>
+            </div>
+        </form>
+    </div>
+</main>
+<footer class="footer"><p>Sistema de Controle de Biblioteca &copy;</p></footer>
+</body>
+</html>

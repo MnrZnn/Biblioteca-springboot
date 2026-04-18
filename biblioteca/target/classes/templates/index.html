@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sistema de Biblioteca</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+    <a th:href="@{/}" class="nav-brand">
+        <span class="brand-text">Biblioteca</span>
+    </a>
+    <ul class="nav-links">
+        <li><a th:href="@{/livros}">Livros</a></li>
+        <li><a th:href="@{/usuarios}">Usuários</a></li>
+        <li><a th:href="@{/emprestimos}">Empréstimos</a></li>
+        <li><a th:href="@{/reservas}">Reservas</a></li>
+        <li><a th:href="@{/multas}">Multas</a></li>
+    </ul>
+</nav>
+
+<main class="main-content">
+    <div th:if="${mensagem}" class="alert alert-success" th:text="${mensagem}"></div>
+    <div th:if="${erro}" class="alert alert-error" th:text="${erro}"></div>
+
+    <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Sistema de biblioteca</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card stat-blue">
+            <div class="stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></div>
+            <div class="stat-info">
+                <span class="stat-number" th:text="${totalLivros}">0</span>
+                <span class="stat-label">Livros Cadastrados</span>
+            </div>
+        </div>
+        <div class="stat-card stat-green">
+            <div class="stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg></div>
+            <div class="stat-info">
+                <span class="stat-number" th:text="${totalUsuarios}">0</span>
+                <span class="stat-label">Usuários</span>
+            </div>
+        </div>
+        <div class="stat-card stat-amber">
+            <div class="stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><polyline points="10 2 10 10 12.5 8 15 10 15 2"/></svg></div>
+            <div class="stat-info">
+                <span class="stat-number" th:text="${totalEmprestimos}">0</span>
+                <span class="stat-label">Empréstimos Ativos</span>
+            </div>
+        </div>
+        <div class="stat-card stat-purple">
+            <div class="stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg></div>
+            <div class="stat-info">
+                <span class="stat-number" th:text="${totalReservas}">0</span>
+                <span class="stat-label">Reservas Ativas</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <h2 class="section-title">Empréstimos Ativos</h2>
+        <a th:href="@{/emprestimos/novo}" class="btn btn-primary">+ Novo Empréstimo</a>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table" th:if="${not #lists.isEmpty(emprestimosRecentes)}">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Livro</th>
+                    <th>Retirada</th>
+                    <th>Prazo</th>
+                    <th>Status</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="emp : ${emprestimosRecentes}">
+                    <td th:text="${emp.usuarioNome}">-</td>
+                    <td th:text="${emp.livroTitulo}">-</td>
+                    <td th:text="${emp.dataRetirada}">-</td>
+                    <td th:text="${emp.dataPrevista}">-</td>
+                    <td>
+                        <span th:classappend="${emp.atrasado} ? 'badge badge-danger' : 'badge badge-success'"
+                              th:text="${emp.status}">ATIVO</span>
+                    </td>
+                    <td>
+                        <form th:action="@{/emprestimos/devolver/{id}(id=${emp.id})}" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-sm btn-warning">Devolver</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${#lists.isEmpty(emprestimosRecentes)}" class="empty-state">
+            <p>Nenhum empréstimo no momento.</p>
+            <a th:href="@{/emprestimos/novo}" class="btn btn-primary">Registrar Empréstimo</a>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <h2 class="section-title">Ações Rápidas</h2>
+        <div class="actions-grid">
+            <a th:href="@{/livros/novo}" class="action-card">
+                <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M9 10h6"/><path d="M12 7v6"/></svg>
+                <span>Adicionar Livro</span>
+            </a>
+            <a th:href="@{/usuarios/novo}" class="action-card">
+                <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                <span>Cadastrar Usuário</span>
+            </a>
+            <a th:href="@{/emprestimos/novo}" class="action-card">
+                <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Emprestar Livro</span>
+            </a>
+            <a th:href="@{/reservas/nova}" class="action-card">
+                <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                <span>Nova Reserva</span>
+            </a>
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <p>Sistema de Controle de Biblioteca &copy;</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Empréstimos — Biblioteca</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <a th:href="@{/}" class="nav-brand"><svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg><span class="brand-text">Biblioteca</span></a>
+    <ul class="nav-links">
+        <li><a th:href="@{/livros}">Livros</a></li>
+        <li><a th:href="@{/usuarios}">Usuários</a></li>
+        <li><a th:href="@{/emprestimos}" class="active">Empréstimos</a></li>
+        <li><a th:href="@{/reservas}">Reservas</a></li>
+        <li><a th:href="@{/multas}">Multas</a></li>
+    </ul>
+</nav>
+<main class="main-content">
+    <div th:if="${mensagem}" class="alert alert-success" th:text="${mensagem}"></div>
+    <div th:if="${erro}" class="alert alert-error" th:text="${erro}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Empréstimos</h1>
+            <p class="page-subtitle">Controle de empréstimos e devoluções</p>
+        </div>
+        <a th:href="@{/emprestimos/novo}" class="btn btn-primary">+ Novo Empréstimo</a>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table" th:if="${not #lists.isEmpty(emprestimos)}">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Livro</th>
+                    <th>Data Retirada</th>
+                    <th>Prazo</th>
+                    <th>Devolução</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="emp : ${emprestimos}">
+                    <td th:text="${emp.usuarioNome}">-</td>
+                    <td th:text="${emp.livroTitulo}">-</td>
+                    <td th:text="${emp.dataRetirada}">-</td>
+                    <td th:text="${emp.dataPrevista}">-</td>
+                    <td th:text="${emp.dataDevolucao != null} ? ${emp.dataDevolucao} : '-'">-</td>
+                    <td>
+                        <span th:text="${emp.status}"
+                              th:classappend="${emp.status == 'ATIVO'} ? 'badge badge-blue' :
+                                             (${emp.status == 'FINALIZADO'} ? 'badge badge-success' : 'badge badge-danger')">-</span>
+                    </td>
+                    <td class="actions-cell">
+                        <form th:if="${emp.status == 'ATIVO'}"
+                              th:action="@{/emprestimos/devolver/{id}(id=${emp.id})}" method="post" style="display:inline"
+                              onsubmit="return confirm('Confirmar devolução?')">
+                            <button type="submit" class="btn btn-sm btn-warning">Devolver</button>
+                        </form>
+                        <span th:if="${emp.status != 'ATIVO'}" class="text-muted">—</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${#lists.isEmpty(emprestimos)}" class="empty-state">
+            <p>Nenhum empréstimo registrado.</p>
+            <a th:href="@{/emprestimos/novo}" class="btn btn-primary">Registrar Empréstimo</a>
+        </div>
+    </div>
+</main>
+<footer class="footer"><p>Sistema de Controle de Biblioteca &copy;</p></footer>
+</body>
+</html>

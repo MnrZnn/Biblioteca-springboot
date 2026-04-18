@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Multas — Biblioteca</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <a th:href="@{/}" class="nav-brand"><svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg><span class="brand-text">Biblioteca</span></a>
+    <ul class="nav-links">
+        <li><a th:href="@{/livros}">Livros</a></li>
+        <li><a th:href="@{/usuarios}">Usuários</a></li>
+        <li><a th:href="@{/emprestimos}">Empréstimos</a></li>
+        <li><a th:href="@{/reservas}">Reservas</a></li>
+        <li><a th:href="@{/multas}" class="active">Multas</a></li>
+    </ul>
+</nav>
+<main class="main-content">
+    <div th:if="${mensagem}" class="alert alert-success" th:text="${mensagem}"></div>
+    <div th:if="${erro}" class="alert alert-error" th:text="${erro}"></div>
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Multas</h1>
+            <p class="page-subtitle">Multas geradas por atraso na devolução (R$ 2,50/dia)</p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table" th:if="${not #lists.isEmpty(multas)}">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Empréstimo ID</th>
+                    <th>Dias de Atraso</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="m : ${multas}">
+                    <td th:text="${m.usuarioNome}">-</td>
+                    <td><code th:text="${#strings.abbreviate(m.emprestimoId, 12)}">-</code></td>
+                    <td th:text="${m.diasAtraso + ' dias'}">-</td>
+                    <td>
+                        <strong th:text="'R$ ' + ${#numbers.formatDecimal(m.valor, 1, 2)}">-</strong>
+                    </td>
+                    <td>
+                        <span th:classappend="${m.paga} ? 'badge badge-success' : 'badge badge-danger'"
+                              th:text="${m.paga} ? 'PAGA' : 'PENDENTE'">-</span>
+                    </td>
+                    <td>
+                        <form th:if="${!m.paga}"
+                              th:action="@{/multas/pagar/{id}(id=${m.id})}" method="post" style="display:inline"
+                              onsubmit="return confirm('Confirmar quitação da multa?')">
+                            <button type="submit" class="btn btn-sm btn-primary">Quitar</button>
+                        </form>
+                        <span th:if="${m.paga}" class="text-muted">✓ Paga</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${#lists.isEmpty(multas)}" class="empty-state">
+            <p>🎉 Nenhuma multa registrada.</p>
+        </div>
+    </div>
+</main>
+<footer class="footer"><p>Sistema de Controle de Biblioteca &copy;</p></footer>
+</body>
+</html>

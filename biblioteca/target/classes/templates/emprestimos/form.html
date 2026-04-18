@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Novo Empréstimo — Biblioteca</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <a th:href="@{/}" class="nav-brand"><svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg><span class="brand-text">Biblioteca</span></a>
+    <ul class="nav-links">
+        <li><a th:href="@{/livros}">Livros</a></li>
+        <li><a th:href="@{/usuarios}">Usuários</a></li>
+        <li><a th:href="@{/emprestimos}" class="active">Empréstimos</a></li>
+        <li><a th:href="@{/reservas}">Reservas</a></li>
+        <li><a th:href="@{/multas}">Multas</a></li>
+    </ul>
+</nav>
+<main class="main-content">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Novo Empréstimo</h1>
+            <p class="page-subtitle">Prazo padrão: 14 dias</p>
+        </div>
+        <a th:href="@{/emprestimos}" class="btn btn-ghost">← Voltar</a>
+    </div>
+
+    <div class="form-card">
+        <form th:action="@{/emprestimos/emprestar}" method="post">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="usuarioId">Usuário *</label>
+                    <select id="usuarioId" name="usuarioId" class="form-control" required>
+                        <option value="">Selecione o usuário...</option>
+                        <option th:each="u : ${usuarios}" th:value="${u.id}"
+                                th:text="${u.nome + ' (' + u.matricula + ') — ' + u.tipo}">-</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="livroId">Livro *</label>
+                    <select id="livroId" name="livroId" class="form-control" required>
+                        <option value="">Selecione o livro...</option>
+                        <option th:each="l : ${livros}" th:value="${l.id}"
+                                th:text="${l.titulo + ' — ' + l.autor + ' (' + l.quantidadeDisponivel + ' disp.)'}">-</option>
+                    </select>
+                </div>
+            </div>
+            <div class="info-box">
+                <p><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg> O prazo de devolução será automaticamente calculado para <strong>14 dias</strong> a partir de hoje.</p>
+                <p><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Em caso de atraso, será gerada uma multa de <strong>R$ 2,50 por dia</strong>.</p>
+            </div>
+            <div class="form-actions">
+                <a th:href="@{/emprestimos}" class="btn btn-ghost">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Confirmar Empréstimo</button>
+            </div>
+        </form>
+    </div>
+</main>
+<footer class="footer"><p>Sistema de Controle de Biblioteca &copy;</p></footer>
+</body>
+</html>
